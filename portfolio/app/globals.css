@@ -1,0 +1,451 @@
+@import "tailwindcss";
+
+/* Tailwind v4 Configuration */
+@theme {
+  --font-family-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-family-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+  
+  /* Extended Colors */
+  --color-primary: #8b5cf6;
+  --color-primary-dark: #7c3aed;
+  --color-secondary: #3b82f6;
+  --color-accent: #10b981;
+
+  /* Container configuration */
+  --container-center: true;
+  --container-padding: 1.5rem;
+  
+  /* Custom breakpoints */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+}
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 0, 0, 0;
+  --background-end-rgb: 0, 0, 0;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #000000;
+  color: #ffffff;
+  overflow-x: hidden;
+  line-height: 1.8;              /* MORE spacious line height */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 12px;                    /* Wider for comfort */
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #8b5cf6, #3b82f6);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #a78bfa, #60a5fa);
+}
+
+/* Selection color */
+::selection {
+  background: rgba(139, 92, 246, 0.3);
+  color: #ffffff;
+}
+
+::-moz-selection {
+  background: rgba(139, 92, 246, 0.3);
+  color: #ffffff;
+}
+
+/* Animations from Components */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glitch-1 {
+  0%, 100% { transform: translate(-50%, 0); }
+  33% { transform: translate(-50.5%, -2px); }
+  66% { transform: translate(-49.5%, 2px); }
+}
+
+@keyframes glitch-2 {
+  0%, 100% { transform: translate(-50%, 0); }
+  33% { transform: translate(-49.5%, 2px); }
+  66% { transform: translate(-50.5%, -2px); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(20px, 20px); }
+}
+
+@keyframes float-delayed {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-20px, -20px); }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(1.1); }
+}
+
+@keyframes slide-in {
+  0% { transform: translateX(-20px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slide-in-delayed {
+  0% { transform: translateX(-20px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Animation Utilities */
+.animate-fade-in { animation: fadeIn 0.6s ease-out forwards; }
+.animate-float { animation: float 6s ease-in-out infinite; }
+.animate-float-delayed { animation: float-delayed 8s ease-in-out infinite; }
+.animate-pulse-slow { animation: pulse-slow 4s ease-in-out infinite; }
+.animate-slide-in { animation: slide-in 0.8s ease-out forwards; }
+.animate-slide-in-delayed { animation: slide-in 0.8s ease-out 0.2s forwards; opacity: 0; animation-fill-mode: forwards; }
+.animate-bounce-slow { animation: bounce-slow 2s ease-in-out infinite; }
+
+/* Glitch Effect Utilities */
+.glitch-text {
+  position: relative;
+}
+
+.glitch-layer {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 100%;
+  opacity: 0.7;
+}
+
+.glitch-layer-1 {
+  color: #8b5cf6;
+  clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
+  animation: glitch-1 2s infinite;
+}
+
+.glitch-layer-2 {
+  color: #3b82f6;
+  clip-path: polygon(0 55%, 100% 55%, 100% 100%, 0 100%);
+  animation: glitch-2 2s infinite;
+}
+
+/* Gradient Text */
+.text-gradient {
+  background: linear-gradient(to right, #ffffff, #a78bfa, #60a5fa);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Glassmorphism */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Improved focus states */
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid #8b5cf6;
+  outline-offset: 4px;
+}
+
+/* Container - EXTRA SPACIOUS */
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 2rem;        /* MORE padding on mobile */
+  padding-right: 2rem;
+}
+
+@media (min-width: 640px) { 
+  .container { 
+    max-width: 640px; 
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  } 
+}
+
+@media (min-width: 768px) { 
+  .container { 
+    max-width: 768px; 
+    padding-left: 3rem; 
+    padding-right: 3rem; 
+  } 
+}
+
+@media (min-width: 1024px) { 
+  .container { 
+    max-width: 1024px; 
+    padding-left: 4rem;        /* EXTRA spacious */
+    padding-right: 4rem; 
+  } 
+}
+
+@media (min-width: 1280px) { 
+  .container { 
+    max-width: 1280px;
+    padding-left: 5rem;        /* Even MORE space */
+    padding-right: 5rem; 
+  } 
+}
+
+@media (min-width: 1536px) { 
+  .container { 
+    max-width: 1536px;
+    padding-left: 6rem;        /* Maximum breathing room */
+    padding-right: 6rem;
+  } 
+}
+
+/* Section Spacing - VERY GENEROUS */
+section {
+  scroll-margin-top: 5rem;
+}
+
+/* Typography - MORE breathing room */
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.3;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.5rem;       /* MORE space below headings */
+}
+
+h1 {
+  margin-bottom: 2rem;         /* Extra space for h1 */
+}
+
+h2 {
+  margin-bottom: 1.75rem;
+}
+
+p {
+  margin-bottom: 1.5rem;       /* MORE space between paragraphs */
+  line-height: 1.8;            /* More line spacing */
+}
+
+/* Better spacing for text elements */
+.prose p {
+  margin-bottom: 2rem;         /* GENEROUS paragraph spacing */
+}
+
+.prose h1 {
+  margin-top: 3rem;
+  margin-bottom: 1.5rem;
+}
+
+.prose h2 {
+  margin-top: 2.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.prose h3 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+/* Mobile tap targets */
+@media (max-width: 768px) {
+  button, a {
+    min-height: 48px;          /* Larger tap targets */
+    min-width: 48px;
+  }
+}
+
+/* Card spacing - MORE GENEROUS */
+.card {
+  padding: 2rem;               /* More padding */
+  margin-bottom: 2rem;         /* Space between cards */
+}
+
+@media (min-width: 768px) {
+  .card {
+    padding: 2.5rem;
+    margin-bottom: 2.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .card {
+    padding: 3rem;             /* EXTRA spacious cards */
+    margin-bottom: 3rem;
+  }
+}
+
+/* Grid gap - MUCH MORE SPACE */
+.grid {
+  gap: 2rem;                   /* MORE space between grid items */
+}
+
+@media (min-width: 768px) {
+  .grid {
+    gap: 2.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    gap: 3rem;                 /* GENEROUS gaps on desktop */
+  }
+}
+
+/* Button spacing - MORE comfortable */
+button, .btn {
+  padding: 1rem 2rem;          /* More padding */
+  margin: 0.5rem;              /* Space around buttons */
+}
+
+@media (min-width: 768px) {
+  button, .btn {
+    padding: 1.25rem 2.5rem;   /* Even MORE padding */
+  }
+}
+
+/* Form input spacing - MORE room */
+input, textarea, select {
+  padding: 1.25rem 1.5rem;     /* Generous input padding */
+  margin-bottom: 1.5rem;       /* Space between inputs */
+}
+
+@media (min-width: 768px) {
+  input, textarea, select {
+    padding: 1.5rem 2rem;      /* EXTRA comfortable inputs */
+  }
+}
+
+/* Improve readability for long text */
+.max-w-prose {
+  max-width: 70ch;             /* Wider for comfort */
+}
+
+/* Better list spacing - MORE GENEROUS */
+ul, ol {
+  padding-left: 2rem;          /* More indentation */
+  margin-bottom: 2rem;         /* More space after lists */
+}
+
+li {
+  margin-bottom: 1rem;         /* MORE space between list items */
+  line-height: 1.8;
+}
+
+/* Flex and Grid spacing utilities */
+.space-y-4 > * + * {
+  margin-top: 1.5rem;          /* More vertical spacing */
+}
+
+.space-y-6 > * + * {
+  margin-top: 2rem;
+}
+
+.space-y-8 > * + * {
+  margin-top: 2.5rem;
+}
+
+.space-x-4 > * + * {
+  margin-left: 1.5rem;         /* More horizontal spacing */
+}
+
+.space-x-6 > * + * {
+  margin-left: 2rem;
+}
+
+.space-x-8 > * + * {
+  margin-left: 2.5rem;
+}
+
+/* Smooth transitions */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Remove transitions for animations */
+.animate-fade-in,
+.animate-float,
+.animate-float-delayed,
+.animate-pulse-slow,
+.animate-slide-in,
+.animate-slide-in-delayed,
+.animate-bounce-slow {
+  transition: none;
+}
+
+/* Section padding override for spaciousness */
+section.py-32 {
+  padding-top: 8rem !important;
+  padding-bottom: 8rem !important;
+}
+
+@media (min-width: 768px) {
+  section.py-32 {
+    padding-top: 10rem !important;
+    padding-bottom: 10rem !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  section.py-32 {
+    padding-top: 12rem !important;    /* EXTRA spacious sections */
+    padding-bottom: 12rem !important;
+  }
+}
+
+/* Component spacing overrides for breathability */
+.mb-4 { margin-bottom: 1.5rem !important; }
+.mb-6 { margin-bottom: 2rem !important; }
+.mb-8 { margin-bottom: 2.5rem !important; }
+.mb-12 { margin-bottom: 4rem !important; }
+.mb-16 { margin-bottom: 5rem !important; }
+.mb-20 { margin-bottom: 6rem !important; }
+
+.mt-4 { margin-top: 1.5rem !important; }
+.mt-6 { margin-top: 2rem !important; }
+.mt-8 { margin-top: 2.5rem !important; }
+.mt-12 { margin-top: 4rem !important; }
+.mt-16 { margin-top: 5rem !important; }
+
+.p-4 { padding: 1.5rem !important; }
+.p-6 { padding: 2rem !important; }
+.p-8 { padding: 2.5rem !important; }
+
+.gap-4 { gap: 1.5rem !important; }
+.gap-6 { gap: 2rem !important; }
+.gap-8 { gap: 2.5rem !important; }
