@@ -5,6 +5,8 @@ export default function Contact() {
     const [isVisible, setIsVisible] = useState(false)
     const [formData, setFormData] = useState({ name: '', email: '', message: '' })
     const [focusedField, setFocusedField] = useState<string | null>(null)
+    const [status, setStatus] = useState<{ type: 'success' | 'error' | '', message: string }>({ type: '', message: '' })
+    const [isSubmitting, setIsSubmitting] = useState(false)
     const sectionRef = useRef<HTMLElement>(null)
 
     useEffect(() => {
@@ -24,10 +26,33 @@ export default function Contact() {
         return () => observer.disconnect()
     }, [])
 
-    const handleSubmit = (e: FormEvent) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault()
-        console.log('Form submitted:', formData)
-        // Add toast or notification logic here
+        setIsSubmitting(true)
+        setStatus({ type: '', message: '' })
+
+        try {
+            const response = await fetch('/api/contact', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            })
+
+            const data = await response.json()
+
+            if (response.ok) {
+                setStatus({ type: 'success', message: 'Message sent successfully! I will get back to you soon.' })
+                setFormData({ name: '', email: '', message: '' })
+            } else {
+                setStatus({ type: 'error', message: data.message || 'Something went wrong. Please try again later.' })
+            }
+        } catch (error) {
+            setStatus({ type: 'error', message: 'Could not connect to the server. Please check your connection.' })
+        } finally {
+            setIsSubmitting(false)
+        }
     }
 
     const socialLinks = [
@@ -170,25 +195,51 @@ export default function Contact() {
                                 >
                                     Your Message
                                 </label>
-                            </div>
+                             </div>
+
+                            {/* Status Message */}
+                            {status.message && (
+                                <div
+                                    className={`p-4 rounded-xl text-sm font-medium transition-all ${status.type === 'success'
+                                            ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                                            : 'bg-red-500/10 text-red-400 border border-red-500/20'
+                                        }`}
+                                >
+                                    {status.message}
+                                </div>
+                            )}
 
                             {/* Submit Button */}
-                            <button
+                             <button
                                 type="submit"
-                                className="group relative w-full px-8 py-4 bg-gradient-to-r from-purple-500 to-blue-500 text-white text-lg font-semibold rounded-2xl overflow-hidden transition-all hover:shadow-2xl hover:shadow-purple-500/50 hover:scale-[1.02] active:scale-[0.98]"
+                                disabled={isSubmitting}
+                                className={`group relative w-full px-8 py-4 bg-gradient-to-r from-purple-500 to-blue-500 text-white text-lg font-semibold rounded-2xl overflow-hidden transition-all hover:shadow-2xl hover:shadow-purple-500/50 hover:scale-[1.02] active:scale-[0.98] ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
+                                    }`}
                             >
                                 <span className="relative z-10 flex items-center justify-center gap-2">
-                                    Send Message
-                                    <svg
-                                        className="w-5 h-5 group-hover:translate-x-1 transition-transform"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                    </svg>
+                                    {isSubmitting ? (
+                                        <>
+                                            Sending...
+                                            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                        </>
+                                    ) : (
+                                        <>
+                                            Send Message
+                                            <svg
+                                                className="w-5 h-5 group-hover:translate-x-1 transition-transform"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                            </svg>
+                                        </>
+                                    )}
                                 </span>
-                                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 transform translate-x-full group-hover:translate-x-0 transition-transform duration-500" />
+                                <div className={`absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 transform translate-x-full group-hover:translate-x-0 transition-transform duration-500 ${isSubmitting ? 'translate-x-0' : ''}`} />
                             </button>
                         </form>
                     </div>

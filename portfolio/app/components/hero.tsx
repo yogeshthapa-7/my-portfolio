@@ -101,21 +101,27 @@ export default function Hero() {
             isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
           }`}
         >
-          <button className="group relative px-10 py-5 bg-white text-black font-semibold text-lg overflow-hidden transition-all hover:scale-105 rounded-full">
+          <a 
+            href="#projects"
+            className="group relative px-10 py-5 bg-white text-black font-semibold text-lg overflow-hidden transition-all hover:scale-105 rounded-full inline-block"
+          >
             <span className="relative z-10">View My Work</span>
             <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
             <span className="absolute inset-0 z-10 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               View My Work
             </span>
-          </button>
+          </a>
           
-          <button className="relative px-10 py-5 font-semibold text-lg border-2 border-white text-white overflow-hidden group rounded-full">
+          <a 
+            href="#contact"
+            className="relative px-10 py-5 font-semibold text-lg border-2 border-white text-white overflow-hidden group rounded-full inline-block"
+          >
             <span className="relative z-10">Get In Touch</span>
             <div className="absolute inset-0 bg-white transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300" />
             <span className="absolute inset-0 z-10 flex items-center justify-center text-black opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               Get In Touch
             </span>
-          </button>
+          </a>
         </div>
 
         {/* Scroll indicator */}

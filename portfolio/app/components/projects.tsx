@@ -10,6 +10,8 @@ interface Project {
     category: string
     year: string
     link?: string
+    image: string
+    noLivePreview?: boolean
 }
 
 export default function Projects() {
@@ -37,57 +39,48 @@ export default function Projects() {
     const projects: Project[] = [
         {
             id: 1,
-            title: "E-Commerce Platform",
-            description: "A full-stack e-commerce solution with real-time inventory, payment processing, and admin dashboard. Built with modern technologies for optimal performance.",
-            tech: ["Next.js", "Stripe", "MongoDB", "Tailwind"],
+            title: "AI-Tools-Directory",
+            description: "A modern AI tools directory built with Next.js 16, React 19, and Tailwind v4. Features advanced filtering, glassmorphic UI, Framer Motion animations, and local bookmarking. Fully responsive and optimized for discovering curated AI tools.",
+            tech: ["Next.js", "React", "Tailwind"],
             gradient: "from-purple-500 to-pink-500",
             category: "Web App",
-            year: "2024"
+            year: "2025",
+            image: "projects/ai_tools.png",
+            link: "https://ai-tools-ptmxjoxbt-yogsthapa-gmailcoms-projects.vercel.app"
         },
         {
             id: 2,
-            title: "Task Management System",
-            description: "Collaborative task management platform with real-time updates, team collaboration features, and advanced analytics dashboard.",
-            tech: ["React", "Node.js", "Socket.io", "PostgreSQL"],
-            gradient: "from-blue-500 to-cyan-500",
-            category: "SaaS",
-            year: "2024"
-        },
-        {
-            id: 3,
             title: "Portfolio Generator",
             description: "AI-powered portfolio generator that creates stunning, customizable portfolios in minutes. Features drag-and-drop interface and real-time preview.",
             tech: ["Next.js", "OpenAI", "Framer Motion", "Supabase"],
             gradient: "from-emerald-500 to-teal-500",
             category: "Tool",
-            year: "2023"
+            year: "2025",
+            image: "projects/home.png",
+            link: "https://portfolios-generator-kohl.vercel.app"
+        },
+        {
+            id: 3,
+            title: "React Mini Projects",
+            description: "A collection of small React projects that showcase my skills in building modern, responsive web applications. Features include real-time updates, interactive components, and clean, modern design.",
+            tech: ["Next.js 16", "React 19", "Tailwind CSS v4"],
+            gradient: "from-orange-500 to-red-500",
+            category: "Web App",
+            year: "2025",
+            image: "projects/mini_projects.png",
+            link: "https://mini-projects-lsd4j9a38-yogsthapa-gmailcoms-projects.vercel.app"
         },
         {
             id: 4,
-            title: "Social Media Dashboard",
-            description: "Unified dashboard for managing multiple social media accounts. Schedule posts, track analytics, and engage with audience from one place.",
-            tech: ["React", "Firebase", "Chart.js", "Material-UI"],
-            gradient: "from-orange-500 to-red-500",
-            category: "Dashboard",
-            year: "2023"
-        },
-        {
-            id: 5,
-            title: "AI Chat Application",
-            description: "Real-time chat application powered by AI for smart responses, language translation, and sentiment analysis.",
-            tech: ["Next.js", "WebSocket", "TensorFlow", "Redis"],
+            title: "E-Commerce Website",
+            description: "A modern e-commerce platform built with Next.js 16, React 19, and Tailwind v4. Features advanced filtering, glassmorphic UI, Framer Motion animations, and local bookmarking. Fully responsive and optimized for discovering curated AI tools.",
+            tech: ["Next.js 16", "TypeScript", "shadcn UI"],
             gradient: "from-violet-500 to-purple-500",
-            category: "AI",
-            year: "2024"
-        },
-        {
-            id: 6,
-            title: "Fitness Tracking App",
-            description: "Mobile-first fitness app with workout plans, progress tracking, nutrition calculator, and community features.",
-            tech: ["React Native", "Express", "MongoDB", "AWS"],
-            gradient: "from-pink-500 to-rose-500",
-            category: "Mobile",
-            year: "2023"
+            category: "Web App",
+            year: "2025",
+            image: "/projects/homepage.png",
+            link: "#",
+            noLivePreview: true
         }
     ]
 
@@ -131,15 +124,25 @@ export default function Projects() {
                         >
                             {/* Card */}
                             <div
-                                className="relative h-full glass-panel rounded-3xl overflow-hidden transition-all duration-500 hover:border-purple-500/30 hover:shadow-2xl hover:shadow-purple-500/20 hover:-translate-y-2"
+                                className="relative h-full flex flex-col glass-panel rounded-3xl overflow-hidden transition-all duration-500 hover:border-purple-500/30 hover:shadow-2xl hover:shadow-purple-500/20 hover:-translate-y-2"
                             >
                                 {/* Gradient overlay on hover */}
                                 <div
                                     className={`absolute inset-0 bg-gradient-to-br ${project.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}
                                 />
 
+                                {/* Project Image */}
+                                <div className="relative h-48 sm:h-56 w-full overflow-hidden border-b border-white/5 shrink-0">
+                                    <div className={`absolute inset-0 bg-gradient-to-br ${project.gradient} opacity-20 mix-blend-overlay z-10 pointer-events-none`} />
+                                    <img 
+                                        src={project.image} 
+                                        alt={project.title}
+                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                    />
+                                </div>
+
                                 {/* Content */}
-                                <div className="relative p-8 h-full flex flex-col">
+                                <div className="relative p-6 sm:p-8 flex-grow flex flex-col">
                                     {/* Category badge */}
                                     <div className="flex items-center justify-between mb-8">
                                         <span className="px-3 py-1 bg-white/5 backdrop-blur-sm border border-white/10 rounded-full text-xs text-gray-400 uppercase tracking-wider">
@@ -180,7 +183,15 @@ export default function Projects() {
                                     {/* Links */}
                                     <div className="flex gap-4 mt-auto">
                                         <a
-                                            href="#"
+                                            href={project.noLivePreview ? "javascript:void(0)" : (project.link || "#")}
+                                            onClick={(e) => {
+                                                if (project.noLivePreview) {
+                                                    e.preventDefault();
+                                                    alert("sorry live preview for this project is not available for now.");
+                                                }
+                                            }}
+                                            target={project.noLivePreview ? "_self" : "_blank"}
+                                            rel="noopener noreferrer"
                                             className="flex-1 text-center px-4 py-3 text-sm bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl text-white hover:bg-white/10 hover:border-purple-500/50 transition-all group/btn"
                                         >
                                             <span className="flex items-center justify-center gap-2">
