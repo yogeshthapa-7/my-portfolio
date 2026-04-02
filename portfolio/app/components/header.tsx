@@ -1,126 +1,163 @@
-'use client'
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
+"use client";
 
-export default function Header() {
-    const [scrolled, setScrolled] = useState(false)
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { Menu, X, Sparkles, CircleUserRound } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
-    useEffect(() => {
-        const handleScroll = () => {
-            setScrolled(window.scrollY > 50)
-        }
+const Header = () => {
+  const [navOpen, setNavOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
-        window.addEventListener('scroll', handleScroll)
-        return () => window.removeEventListener('scroll', handleScroll)
-    }, [])
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollPercent = docHeight > 0 ? (window.scrollY / docHeight) * 100 : 0;
+      setScrollProgress(scrollPercent);
+    };
 
-    const navLinks = [
-        { name: 'About', href: '#about' },
-        { name: 'Projects', href: '#projects' },
-        { name: 'Contact', href: '#contact' }
-    ]
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
-    return (
-        <header
-            className={`fixed top-0 w-full z-50 transition-all duration-500 ${scrolled
-                    ? 'bg-black/80 backdrop-blur-xl border-b border-white/10 shadow-2xl'
-                    : 'bg-transparent'
-                }`}
-        >
-            <nav className="container py-4 md:py-5">
-                <div className="flex items-center justify-between">
-                    {/* Logo */}
-                    <Link
-                        href="/"
-                        className="group flex items-center gap-3"
-                    >
-                        <div className="relative">
-                            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg flex items-center justify-center transform group-hover:rotate-180 transition-transform duration-500">
-                                <span className="text-white font-bold text-xl">Y</span>
-                            </div>
-                            <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg blur opacity-50 group-hover:opacity-100 transition-opacity" />
-                        </div>
-                        <span
-                            className="text-xl font-bold bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-purple-400 group-hover:to-blue-400 transition-all tracking-tight"
-                        >
-                            Yogesh Thapa
-                        </span>
-                    </Link>
+  const navLinks = [
+    { name: "Home", href: "/" },
+    { name: "About", href: "/#about" },
+    { name: "Skills", href: "/#skills" },
+    { name: "Projects", href: "/#projects" },
+    { name: "Qualification", href: "/#qualification" },
+    { name: "Contact", href: "/#contact" },
+  ];
 
-                    {/* Desktop Navigation */}
-                    <div className="hidden md:flex items-center gap-8">
-                        {navLinks.map((link) => (
-                            <a
-                                key={link.name}
-                                href={link.href}
-                                className="relative text-gray-300 hover:text-white transition-colors group text-sm font-medium tracking-wide"
-                            >
-                                {link.name}
-                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-500 to-blue-500 group-hover:w-full transition-all duration-300" />
-                            </a>
-                        ))}
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    const isHome = href === "/";
+    if (isHome) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      const targetId = href.replace("/#", "");
+      const element = document.getElementById(targetId);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
 
-                        {/* CTA Button */}
-                        <a
-                            href="#contact"
-                            className="relative px-6 py-2.5 bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold text-sm rounded-lg overflow-hidden group shadow-lg shadow-purple-500/20"
-                        >
-                            <span className="relative z-10">Hire Me</span>
-                            <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 transform translate-x-full group-hover:translate-x-0 transition-transform duration-300" />
-                        </a>
-                    </div>
+  return (
+    <>
+      <div
+        className="fixed top-0 left-0 right-0 z-[100] h-0.5 bg-transparent pointer-events-none"
+        aria-hidden="true"
+      >
+        <div
+          className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 transition-all duration-100"
+          style={{ width: `${scrollProgress}%` }}
+        />
+      </div>
 
-                    {/* Mobile Menu Button */}
-                    <button
-                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        className="md:hidden relative w-10 h-10 text-white focus:outline-none"
-                        aria-label="Toggle menu"
-                    >
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                            <span
-                                className={`block w-6 h-0.5 bg-white mb-1.5 transition-all duration-300 ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''
-                                    }`}
-                            />
-                            <span
-                                className={`block w-6 h-0.5 bg-white mb-1.5 transition-all duration-300 ${mobileMenuOpen ? 'opacity-0' : ''
-                                    }`}
-                            />
-                            <span
-                                className={`block w-6 h-0.5 bg-white transition-all duration-300 ${mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''
-                                    }`}
-                            />
-                        </div>
-                    </button>
-                </div>
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+          scrolled
+            ? "py-3 backdrop-blur-xl bg-black/80 border-b border-white/10"
+            : "py-5 bg-transparent"
+        }`}
+      >
+        <div className="container">
+          <nav className="flex items-center justify-between h-16 ml-10">
+           <Link
+            href="/"
+            className="flex items-center gap-2 group"
+            aria-label="Yogesh Thapa - Home"
+            >
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <CircleUserRound className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-xl font-bold tracking-tight text-white">
+                Y<span className="text-indigo-400">T</span>
+            </span>
+            </Link>
 
-                {/* Mobile Menu */}
-                <div
-                    className={`md:hidden overflow-hidden transition-all duration-500 ${mobileMenuOpen ? 'max-h-96 mt-4' : 'max-h-0'
-                        }`}
+            <div className="hidden lg:flex items-center gap-1">
+              {navLinks.map((link) => (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  onClick={(e) => handleClick(e, link.href)}
+                  className="px-4 py-2 text-sm font-medium rounded-full transition-all duration-300 text-white/70 hover:text-white hover:bg-white/10"
                 >
-                    <div className="py-4 space-y-2 bg-zinc-900/90 backdrop-blur-lg rounded-2xl border border-white/10 px-4">
-                        {navLinks.map((link, index) => (
-                            <a
-                                key={link.name}
-                                href={link.href}
-                                onClick={() => setMobileMenuOpen(false)}
-                                className="block p-3 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-all"
-                                style={{ transitionDelay: `${index * 50}ms` }}
-                            >
-                                {link.name}
-                            </a>
-                        ))}
-                        <a
-                            href="#contact"
-                            onClick={() => setMobileMenuOpen(false)}
-                            className="block w-full mt-4 px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white text-center font-semibold rounded-xl hover:shadow-lg transition-all"
-                        >
-                            Hire Me
-                        </a>
-                    </div>
-                </div>
+                  {link.name}
+                </a>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <a
+                href="#contact"
+                className="hidden md:inline-flex items-center justify-center px-6 py-2.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white text-sm font-semibold rounded-full hover:shadow-lg hover:shadow-indigo-500/25 hover:scale-105 transition-all duration-300"
+              >
+                Hire Me
+              </a>
+
+              <button
+                onClick={() => setNavOpen(!navOpen)}
+                className="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-white"
+                aria-label={navOpen ? "Close menu" : "Open menu"}
+                aria-expanded={navOpen}
+              >
+                {navOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      {navOpen && (
+        <>
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+            onClick={() => setNavOpen(false)}
+            aria-hidden="true"
+          />
+          <div
+            className="fixed top-20 left-4 right-4 p-6 bg-black/95 backdrop-blur-xl rounded-2xl border border-white/10 z-40 lg:hidden animate-fade-in"
+            role="dialog"
+            aria-label="Mobile navigation"
+          >
+            <nav className="flex flex-col gap-2">
+              {navLinks.map((link, i) => (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  onClick={() => {
+                    handleClick(null as any, link.href);
+                    setNavOpen(false);
+                  }}
+                  className="py-3 px-5 text-lg font-medium rounded-xl transition-all text-white/70 hover:text-white hover:bg-white/10"
+                  style={{ animationDelay: `${i * 50}ms` }}
+                >
+                  {link.name}
+                </a>
+              ))}
+              <div className="pt-4 border-t border-white/10 mt-2">
+                <a
+                  href="#contact"
+                  onClick={() => setNavOpen(false)}
+                  className="flex items-center justify-center gap-2 py-3 px-5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white text-center font-semibold rounded-xl"
+                >
+                  <span>Hire Me</span>
+                </a>
+              </div>
             </nav>
-        </header>
-    )
-}
+          </div>
+        </>
+      )}
+    </>
+  );
+};
+
+export default Header;

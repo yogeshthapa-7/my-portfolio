@@ -1,28 +1,33 @@
+'use client'
+
+import React from 'react'
+
 import Header from './components/header'
+import Footer from './components/footer'
 import Hero from './components/hero'
 import About from './components/about'
-import Projects from './components/projects'
 import Contact from './components/contact'
-import Footer from './components/footer'
-import { Metadata } from 'next'
+import Skills from './components/skills'
+import Projects from './components/projects'
+import Qualification from './components/qualification'
 
-export const metadata: Metadata = {
-    title: 'Your Name - Creative Developer Portfolio',
-    description: 'Full-stack developer specializing in modern web technologies. Creating digital experiences that blend aesthetics with functionality.',
-    keywords: ['Next.js', 'React', 'Web Developer', 'Portfolio', 'Full Stack Developer'],
+const home = () => {
+
+return (
+
+<>
+  <Header />
+  <Hero />
+  <Skills />
+  <Projects />
+  <Qualification />
+  <About />
+  <Contact />
+  <Footer />
+</>
+
+)
+
 }
 
-export default function Home() {
-    return (
-        <>
-            <Header />
-            <main className="overflow-x-hidden">
-                <Hero />
-                <About />
-                <Projects />
-                <Contact />
-            </main>
-            <Footer />
-        </>
-    )
-}
+export default home
