@@ -1,43 +1,46 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import React from 'react';
+import type { Metadata, Viewport } from 'next';
+import { Fraunces, DM_Sans } from 'next/font/google';
+import '../styles/index.css';
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700', '900'],
+  variable: '--font-display',
+  display: 'swap',
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const dmSans = DM_Sans({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-sans',
+  display: 'swap',
 });
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+};
 
 export const metadata: Metadata = {
-  title: "Yogesh Thapa | Full-Stack Developer",
-  description: "Portfolio of Yogesh Thapa, a Full-Stack Developer specializing in React, Next.js, and Node.js. View my projects and skills.",
-  keywords: ["Full-Stack Developer", "React", "Next.js", "Portfolio", "Web Developer", "Yogesh Thapa"],
-  openGraph: {
-    title: "Yogesh Thapa | Full-Stack Developer",
-    description: "Crafting modern web experiences with React & Next.js.",
-    url: "https://yogeshthapa.com",
-    siteName: "Yogesh Thapa Portfolio",
-    locale: "en_US",
-    type: "website",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
+  title: 'PortfolioX — Full-Stack Engineer & Builder',
+  description: 'Premium developer portfolio showcasing full-stack engineering projects, technical skills, and software craftsmanship for senior engineering roles.',
+  icons: {
+    icon: [{ url: '/favicon.ico', type: 'image/x-icon' }],
   },
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="en" className={`${fraunces.variable} ${dmSans.variable}`}>
+      <body className={dmSans.className}>
         {children}
-      </body>
+
+        <script type="module" async src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fportfoliox6494back.builtwithrocket.new&_be=https%3A%2F%2Fappanalytics.rocket.new&_v=0.1.19" />
+        <script type="module" defer src="https://static.rocket.new/rocket-shot.js?v=0.0.2" /></body>
     </html>
   );
 }

@@ -112,3 +112,14 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+img {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-150%); }
+  100% { transform: translateX(250%); }
+}
+

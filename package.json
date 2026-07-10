@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@heroicons/react": "^2.2.0",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.42.2",
+    "motion": "^12.42.2",
+    "tailwind-merge": "^3.6.0"
+  }
+}

@@ -1,33 +1,24 @@
-'use client'
+import React from 'react';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import HeroSection from './components/HeroSection';
+import AboutSection from './components/AboutSection';
+import SkillsSection from './components/SkillsSection';
+import ProjectsSection from './components/ProjectsSection';
+import EducationSection from './components/EducationSection';
+import ContactSection from './components/ContactSection';
 
-import React from 'react'
-
-import Header from './components/header'
-import Footer from './components/footer'
-import Hero from './components/hero'
-import About from './components/about'
-import Contact from './components/contact'
-import Skills from './components/skills'
-import Projects from './components/projects'
-import Qualification from './components/qualification'
-
-const home = () => {
-
-return (
-
-<>
-  <Header />
-  <Hero />
-  <Skills />
-  <Projects />
-  <Qualification />
-  <About />
-  <Contact />
-  <Footer />
-</>
-
-)
-
+export default function HomePage() {
+  return (
+    <main className="relative bg-background overflow-x-hidden">
+      <Header />
+      <HeroSection />
+      <AboutSection />
+      <SkillsSection />
+      <ProjectsSection />
+      <EducationSection />
+      <ContactSection />
+      <Footer />
+    </main>
+  );
 }
-
-export default home
