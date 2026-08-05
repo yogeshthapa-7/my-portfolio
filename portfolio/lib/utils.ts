@@ -1,3 +1,6 @@
+
+import { twMerge } from "tailwind-merge";
+
 type ClassValue = string | number | null | undefined | boolean | Record<string, boolean> | ClassValue[];
 
 function clsx(...inputs: ClassValue[]): string {
@@ -27,8 +30,8 @@ function clsx(...inputs: ClassValue[]): string {
   return classes.join(" ").replace(/\s+/g, " ").trim();
 }
 
-export function cn(...inputs: ClassValue[]): string {
-  return clsx(...inputs);
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
 }
 
 

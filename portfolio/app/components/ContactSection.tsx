@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Icon from '@/components/ui/AppIcon';
+import GenerateButton from '@/components/ui/GenerateButton';
 
 interface FormData {
   name: string;
@@ -276,12 +277,12 @@ export default function ContactSection() {
                 <p className="text-xs text-neutral-400 max-w-xs mx-auto font-light mb-6">
                   Thanks for reaching out. I&apos;ll get back to you within 24 hours.
                 </p>
-                <button
+                <GenerateButton
                   onClick={() => { setSubmitted(false); setFormData({ name: '', email: '', subject: '', message: '' }); }}
                   className="text-xs tracking-widest text-amber-400 uppercase font-medium border border-amber-500/20 px-4 py-2 rounded-xl bg-amber-500/5 hover:bg-amber-500/10 transition-colors"
                 >
                   Send another
-                </button>
+                </GenerateButton>
               </div>
             ) : (
               <form
@@ -371,20 +372,24 @@ export default function ContactSection() {
 
                 {/* Submitting Actions Panel */}
                 <div className="space-y-4 pt-4">
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full relative bg-gradient-to-b from-[#2a2a33] to-[#1b1b22] border border-[#373747]/70 hover:border-amber-500/40 text-amber-200/90 font-light text-sm tracking-wider py-4 rounded-xl transition-all duration-300 shadow-[0_6px_16px_rgba(0,0,0,0.4),inset_0_1px_1px_rgba(255,255,255,0.06)] transform-gpu active:translate-y-[2px] active:shadow-[inset_0_4px_6px_rgba(0,0,0,0.6)] flex items-center justify-center gap-2"
-                  >
-                    {loading ? (
-                      <div className="w-4 h-4 rounded-full border-2 border-amber-400/30 border-t-amber-400 animate-spin" />
-                    ) : (
-                      <>
-                        <Icon name="PaperAirplaneIcon" size={16} />
-                        Send Message
-                      </>
-                    )}
-                  </button>
+                  {/* Wrapper container to handle centering and maximum alignment limits */}
+<div className="w-full flex justify-center items-center pt-2">
+  <GenerateButton
+    type="submit"
+    disabled={loading}
+    
+    className="w-[240px] max-w-[280px] relative bg-gradient-to-b from-[#2a2a33] to-[#1b1b22] border border-[#373747]/70 hover:border-amber-500/40 text-amber-200/90 font-light text-sm tracking-wider py-4 rounded-xl transition-all duration-300 shadow-[0_6px_16px_rgba(0,0,0,0.4),inset_0_1px_1px_rgba(255,255,255,0.06)] transform-gpu active:translate-y-[2px] active:shadow-[inset_0_4px_6px_rgba(0,0,0,0.6)] flex items-center justify-center gap-2"
+  >
+    {loading ? (
+      <div className="w-4 h-4 rounded-full border-2 border-amber-400/30 border-t-amber-400 animate-spin" />
+    ) : (
+      <>
+        <Icon name="PaperAirplaneIcon" size={16} />
+        Send Message
+      </>
+    )}
+  </GenerateButton>
+</div>
 
                   <p className="text-[11px] text-center text-neutral-600 font-light">
                     No spam, ever. I&apos;ll only use your email to respond to your message.

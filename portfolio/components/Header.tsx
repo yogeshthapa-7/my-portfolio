@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import AppLogo from '@/components/ui/AppLogo';
 import Icon from '@/components/ui/AppIcon';
+import GenerateButton from './ui/GenerateButton';
 
 const navLinks = [
   { label: 'About', href: '#about' },
@@ -91,13 +92,13 @@ export default function Header() {
 
           {/* CTA + Hamburger */}
           <div className="flex items-center gap-4">
-            <button
+            <GenerateButton
               onClick={() => handleNavClick('#contact')}
               className="hidden md:inline-flex btn-primary px-5 py-2.5 rounded-lg text-sm items-center gap-2"
             >
               Hire Me
               <Icon name="ArrowRightIcon" size={14} />
-            </button>
+            </GenerateButton>
 
             <button
               onClick={() => setMenuOpen(!menuOpen)}

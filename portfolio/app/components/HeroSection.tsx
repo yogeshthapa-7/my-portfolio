@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 import Icon from '@/components/ui/AppIcon';
+import GenerateButton from '@/components/ui/GenerateButton';
 
 const ROLES = [
   'React Developer',
@@ -66,6 +67,7 @@ export default function HeroSection() {
   };
 
   return (
+    
     <section
       ref={heroRef}
       className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden grid-bg"
@@ -193,26 +195,29 @@ From pixel‑perfect UIs to seamless user experiences — I build interfaces tha
 
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-          <button
-            onClick={() => {
-              const el = document.getElementById('projects');
-              if (el) el.scrollIntoView({ behavior: 'smooth' });
-            }}
-            className="btn-primary px-8 py-4 rounded-xl text-base inline-flex items-center gap-2 min-w-[180px] justify-center"
-          >
-            <Icon name="FolderOpenIcon" size={18} />
-            View Projects
-          </button>
-          <button
-            onClick={() => {
-              const el = document.getElementById('contact');
-              if (el) el.scrollIntoView({ behavior: 'smooth' });
-            }}
-            className="btn-ghost px-8 py-4 rounded-xl text-base inline-flex items-center gap-2 min-w-[180px] justify-center"
-          >
-            <Icon name="EnvelopeIcon" size={18} />
-            Get In Touch
-          </button>
+          <GenerateButton
+  hue={210} // Deep Blue glow effect
+  onClick={() => {
+    const el = document.getElementById('projects');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  }}
+  className="btn-primary px-8 py-4 rounded-xl text-base inline-flex items-center gap-2 min-w-[180px] justify-center"
+>
+  <Icon name="FolderOpenIcon" size={18} />
+  View Projects
+</GenerateButton>
+
+<GenerateButton
+  hue={140} // Emerald Green glow effect
+  onClick={() => {
+    const el = document.getElementById('contact');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  }}
+  className="btn-ghost px-8 py-4 rounded-xl text-base inline-flex items-center gap-2 min-w-[180px] justify-center"
+>
+  <Icon name="EnvelopeIcon" size={18} />
+  Get In Touch
+</GenerateButton>
         </div>
 
         {/* Tech stack pills */}
@@ -227,18 +232,6 @@ From pixel‑perfect UIs to seamless user experiences — I build interfaces tha
           ))}
         </div>
       </div>
-
-      {/* Scroll indicator */}
-      <button
-        onClick={handleScrollDown}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground hover:text-primary transition-colors duration-300 group"
-        aria-label="Scroll down"
-      >
-        <span className="text-xs tracking-[0.3em] uppercase font-medium">Scroll</span>
-        <div className="w-px h-10 bg-gradient-to-b from-primary/60 to-transparent relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1/2 bg-primary animate-bounce" />
-        </div>
-      </button>
     </section>
   );
 }

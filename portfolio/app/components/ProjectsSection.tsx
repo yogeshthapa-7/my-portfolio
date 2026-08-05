@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import AppImage from '@/components/ui/AppImage';
 import Icon from '@/components/ui/AppIcon';
+import GenerateButton from '@/components/ui/GenerateButton';
 
 interface Project {
   id: string;
@@ -151,47 +152,47 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
 
         {/* Premium Glossy 3D Buttons */}
         <div className="flex gap-3 mt-8">
-          <a
-            href={project.liveUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group flex-1 relative py-4 px-6 text-center text-sm font-semibold rounded-3xl 
-                       overflow-hidden border border-neutral-700
-                       bg-gradient-to-r from-[#1C1C22] via-[#2A2A34] to-[#1C1C22]
-                       shadow-[inset_0_2px_4px_rgba(255,255,255,0.1),inset_0_-4px_6px_rgba(0,0,0,0.8)]
-                       hover:shadow-[inset_0_2px_6px_rgba(255,255,255,0.2)] transition-all duration-300
-                       active:scale-[0.97]"
-          >
-            <div 
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent 
-                         -skew-x-12 opacity-0 group-hover:opacity-100"
-              style={{ backgroundSize: "200% 100%", animation: "shimmer 2.5s infinite linear" }}
-            />
-            <span className="relative z-10 text-white group-hover:text-cyan-100 transition-colors">
-              Live Demo
-            </span>
-          </a>
+          <GenerateButton
+  hue={190} // Cyan/Blue glow matching your "Live Demo" look
+  onClick={() => {
+    // Triggers the URL cleanly in a new tab via JavaScript
+    const win = window.open(project.liveUrl, "_blank", "noopener,noreferrer");
+    if (win) win.focus();
+  }}
+  className="group flex-1 min-w-[220px] relative py-4 px-6 text-center text-sm font-semibold rounded-3xl overflow-hidden border border-neutral-700 bg-gradient-to-r from-[#1C1C22] via-[#2A2A34] to-[#1C1C22] shadow-[inset_0_2px_4px_rgba(255,255,255,0.1),inset_0_-4px_6px_rgba(0,0,0,0.8)] hover:shadow-[inset_0_2px_6px_rgba(255,255,255,0.2)] transition-all duration-300 active:scale-[0.97]"
+>
+  {/* Your custom interactive shimmer effect */}
+  <div 
+    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 opacity-0 group-hover:opacity-100"
+    style={{ backgroundSize: "200% 100%", animation: "shimmer 2.5s infinite linear" }}
+  />
+  
+  {/* Text layer styled neatly with the design layout properties */}
+  <span className="relative z-10 text-white group-hover:text-cyan-100 transition-colors">
+    Live Demo
+  </span>
+</GenerateButton>
 
-          <a
-            href={project.githubUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group flex-1 relative py-4 px-6 text-center text-sm font-semibold rounded-3xl 
-                       overflow-hidden border border-neutral-600/80
-                       bg-gradient-to-r from-[#16161B] via-[#22222A] to-[#16161B]
-                       shadow-[inset_0_2px_4px_rgba(255,255,255,0.08),inset_0_-4px_6px_rgba(0,0,0,0.75)]
-                       hover:border-neutral-400 hover:shadow-[inset_0_2px_6px_rgba(255,255,255,0.15)]
-                       transition-all duration-300 active:scale-[0.97]"
-          >
-            <div 
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent 
-                         -skew-x-12 opacity-0 group-hover:opacity-100"
-              style={{ backgroundSize: "200% 100%", animation: "shimmer 2.8s infinite linear" }}
-            />
-            <span className="relative z-10 text-neutral-200 group-hover:text-white transition-colors">
-              Source Code
-            </span>
-          </a>
+          <GenerateButton
+  hue={25} // A warm amber/orange aura that works beautifully for GitHub/Code themes
+  onClick={() => {
+    // Opens the project's GitHub URL safely in a new tab
+    const win = window.open(project.githubUrl, "_blank", "noopener,noreferrer");
+    if (win) win.focus();
+  }}
+  className="group flex-1 min-w-[220px] relative py-4 px-6 text-center text-sm font-semibold rounded-3xl overflow-hidden border border-neutral-600/80 bg-gradient-to-r from-[#16161B] via-[#22222A] to-[#16161B] shadow-[inset_0_2px_4px_rgba(255,255,255,0.08),inset_0_-4px_6px_rgba(0,0,0,0.75)] hover:border-neutral-400 hover:shadow-[inset_0_2px_6px_rgba(255,255,255,0.15)] transition-all duration-300 active:scale-[0.97]"
+>
+  {/* Absolute layout shimmer modifier layer */}
+  <div 
+    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -skew-x-12 opacity-0 group-hover:opacity-100"
+    style={{ backgroundSize: "200% 100%", animation: "shimmer 2.8s infinite linear" }}
+  />
+  
+  {/* High contrast text elements */}
+  <span className="relative z-10 text-neutral-200 group-hover:text-white transition-colors">
+    Source Code
+  </span>
+</GenerateButton>
         </div>
       </div>
     </div>

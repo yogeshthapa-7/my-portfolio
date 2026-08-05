@@ -3,6 +3,7 @@
 import React, { useEffect, useRef } from 'react';
 import AppImage from '@/components/ui/AppImage';
 import Icon from '@/components/ui/AppIcon';
+import GenerateButton from '@/components/ui/GenerateButton';
 
 interface StatItem {
   value: string;
@@ -170,16 +171,22 @@ This led me to join Upcode Nepal in Kathmandu as a React Frontend Developer, whe
 
             {/* CTA row */}
             <div className="reveal-up-hidden flex flex-wrap gap-4 delay-500">
-              <a
-                href="/resume.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-primary inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm">
-                
-                <Icon name="ArrowDownTrayIcon" size={16} />
-                Download CV
-              </a>
-              <button
+           <GenerateButton
+  hue={280} // Purple glow
+  onClick={() => {
+    // Triggers a native safe download hook
+    const link = document.createElement('a');
+    link.href = '/resume.pdf';
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.click();
+  }}
+  className="btn-primary inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm"
+>
+  <Icon name="ArrowDownTrayIcon" size={16} />
+  Download CV
+</GenerateButton>
+              <GenerateButton
                 onClick={() => {
                   const el = document.getElementById('contact');
                   if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -188,7 +195,7 @@ This led me to join Upcode Nepal in Kathmandu as a React Frontend Developer, whe
                 
                 <Icon name="ChatBubbleLeftRightIcon" size={16} />
                 Let&apos;s Talk
-              </button>
+              </GenerateButton>
             </div>
           </div>
         </div>
