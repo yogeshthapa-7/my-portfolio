@@ -20,24 +20,27 @@ export default function HeroSection() {
   const heroRef = useRef<HTMLDivElement>(null);
   const typewriterRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Typewriter effect
+  const displayTextRef = useRef('');
+
   useEffect(() => {
     const currentRole = ROLES[roleIndex];
     const speed = isDeleting ? 50 : 100;
 
     typewriterRef.current = setTimeout(() => {
-      if (!isDeleting && displayText === currentRole) {
+      if (!isDeleting && displayTextRef.current === currentRole) {
         setTimeout(() => setIsDeleting(true), 1800);
         return;
       }
-      if (isDeleting && displayText === '') {
+      if (isDeleting && displayTextRef.current === '') {
         setIsDeleting(false);
         setRoleIndex((prev) => (prev + 1) % ROLES.length);
         return;
       }
-      setDisplayText((prev) =>
-        isDeleting ? prev.slice(0, -1) : currentRole.slice(0, prev.length + 1)
-      );
+      const next = isDeleting
+        ? displayTextRef.current.slice(0, -1)
+        : currentRole.slice(0, displayTextRef.current.length + 1);
+      displayTextRef.current = next;
+      setDisplayText(next);
     }, speed);
 
     return () => {

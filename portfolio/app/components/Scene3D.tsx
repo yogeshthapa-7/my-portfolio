@@ -1,103 +1,76 @@
 'use client';
 
-import React, { useRef, useMemo, useEffect, useLayoutEffect, Suspense } from 'react';
+import React, { useRef, useMemo, useLayoutEffect, useEffect, Suspense } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Preload } from '@react-three/drei';
-import {
-  EffectComposer,
-  Bloom,
-  ChromaticAberration,
-  Noise,
-  Vignette,
-} from '@react-three/postprocessing';
 import * as THREE from 'three';
 
-/**
- * Cinematic 3D background, scroll-driven like joseph-san.com.
- *
- * Performance notes (kept "buttery smooth" despite the effects):
- *  - One passive scroll listener + one spring-damped value (no React state churn in the loop).
- *  - Every heavy renderable uses INSTANCED meshes (single draw call each): a 90-node
- *    data grid and a 150-star field.
- *  - Geometries/materials are memoized once.
- *  - DPR is capped at 1.5; GPU prefers "high-performance".
- *  - Postprocessing passes are intentionally low-strength (bloom is the only "heavy" pass).
- */
-
 const SECTION_COUNT = 6;
-const NODE_COUNT = 90;
-const PARTICLE_COUNT = 150;
+const NODE_COUNT = 60;
+const PARTICLE_COUNT = 80;
 
-// Easing matching joseph-san's in-out curve.
 const easeInOutCubic = (t: number) =>
   t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
 const clamp = (v: number, min: number, max: number) => Math.min(Math.max(v, min), max);
 
-// Palette: website / software-development themed accents (gold/cyan/violet/emerald).
-const PALETTE = ['#fbbf24', '#22d3ee', '#a855f7', '#34d399', '#8b5cf6', '#c084fc'];
+const TECH_PALETTE = ['#22d3ee', '#a855f7', '#34d399', '#6366f1', '#3b82f6', '#818cf8'];
 
-// ---------------------------------------------------------------
-// Static scene data, precomputed once at import time.
-// Doing this at module scope (not inside useMemo) keeps the components
-// pure — React's render must not call Math.random — and avoids
-// recomputing geometry every mount.
-// ---------------------------------------------------------------
 interface NodeData {
   targets: THREE.Vector3[];
   scatters: THREE.Vector3[];
   sections: number[];
-  colors: THREE.Color[];
+  colors: number[];
 }
 
 function makeNodeData(): NodeData {
   const targets: THREE.Vector3[] = [];
   const scatters: THREE.Vector3[] = [];
   const sections: number[] = [];
-  const colors: THREE.Color[] = [];
+  const colors: number[] = [];
 
-  const add = (t: THREE.Vector3, sec: number, c: string) => {
+  const add = (t: THREE.Vector3, sec: number, c: number) => {
     targets.push(t);
     scatters.push(
       t.clone().add(
         new THREE.Vector3(
-          (Math.random() - 0.5) * 7,
-          (Math.random() - 0.5) * 5,
-          -11 - Math.random() * 7
+          (Math.random() - 0.5) * 6,
+          (Math.random() - 0.5) * 4,
+          -10 - Math.random() * 6
         )
       )
     );
     sections.push(sec);
-    colors.push(new THREE.Color(c));
+    colors.push(c);
   };
+
+  const col = (hex: string) => new THREE.Color(hex).getHex();
 
   for (let i = 0; i < 30; i++) {
     add(
-      new THREE.Vector3(-3.8 + (Math.random() - 0.5) * 0.6, -2.2 + i * 0.15, -3 + (Math.random() - 0.5) * 0.6),
+      new THREE.Vector3(-3.2 + (Math.random() - 0.5) * 0.8, -2.0 + i * 0.14, -3 + (Math.random() - 0.5) * 0.8),
       1.0,
-      PALETTE[i % PALETTE.length]
+      col(TECH_PALETTE[i % TECH_PALETTE.length])
     );
   }
-  for (let i = 0; i < 30; i++) {
-    const a = (i / 30) * Math.PI * 2;
+  for (let i = 0; i < 15; i++) {
+    const a = (i / 15) * Math.PI * 2;
     add(
-      new THREE.Vector3(Math.cos(a) * 2.6 + 0.2, Math.sin(a) * 2.6, -8 + (Math.random() - 0.5)),
+      new THREE.Vector3(Math.cos(a) * 2.2 + 0.2, Math.sin(a) * 2.2, -7 + (Math.random() - 0.5)),
       2.2,
-      PALETTE[(i + 1) % PALETTE.length]
+      col(TECH_PALETTE[(i + 2) % TECH_PALETTE.length])
     );
   }
-  for (let i = 0; i < 5; i++) {
-    for (let j = 0; j < 6; j++) {
-      add(
-        new THREE.Vector3(
-          -3.2 + i * 1.6 + (Math.random() - 0.5) * 0.3,
-          -1.5 + j * 0.7 + (Math.random() - 0.5) * 0.3,
-          -15 + (Math.random() - 0.5) * 0.5
-        ),
-        3.6,
-        PALETTE[(i + j) % PALETTE.length]
-      );
-    }
+  for (let i = 0; i < 15; i++) {
+    add(
+      new THREE.Vector3(
+        -2.4 + i * 0.35 + (Math.random() - 0.5) * 0.2,
+        -1.2 + Math.random() * 2.4,
+        -12 + (Math.random() - 0.5) * 0.8
+      ),
+      3.6,
+      col(TECH_PALETTE[(i + 3) % TECH_PALETTE.length])
+    );
   }
 
   return { targets, scatters, sections, colors };
@@ -105,31 +78,33 @@ function makeNodeData(): NodeData {
 
 const NODE_DATA: NodeData = makeNodeData();
 
-function makeStarPositions(): number[] {
-  const arr: number[] = [];
+const TECH_CHARS = ['<', '>', '/', '{', '}', '[', ']', '(', ')', '#', '*', ';', '='];
+
+function makeParticleData(): { positions: number[]; chars: string[] } {
+  const positions: number[] = [];
+  const chars: string[] = [];
   for (let i = 0; i < PARTICLE_COUNT; i++) {
-    arr.push((Math.random() - 0.5) * 32, (Math.random() - 0.5) * 22, -6 - Math.random() * 28);
+    positions.push(
+      (Math.random() - 0.5) * 28,
+      (Math.random() - 0.5) * 20,
+      -5 - Math.random() * 25
+    );
+    chars.push(TECH_CHARS[Math.floor(Math.random() * TECH_CHARS.length)]);
   }
-  return arr;
+  return { positions, chars };
 }
 
-const STAR_POSITIONS = makeStarPositions();
+const PARTICLE_DATA = makeParticleData();
 
-// ---------------------------------------------------------------
-// Module-level scroll store.
-// Updated by a single passive listener + a single useFrame. Zero React
-// re-renders, so the 60fps loop stays free of jank.
-// ---------------------------------------------------------------
 const scrollStore = {
   raw: 0,
   smooth: 0,
-  delta: 0,
-  progress: 0, // 0..1 across the whole document
-  section: 0, // progress * (SECTION_COUNT - 1), a float "scene index"
+  progress: 0,
+  section: 0,
   max: 1,
 };
 
-function useScrollTicker() {
+function useScrollTicker(invalidate: () => void) {
   useEffect(() => {
     const measure = () => {
       scrollStore.max = Math.max(
@@ -139,6 +114,7 @@ function useScrollTicker() {
     };
     const onScroll = () => {
       scrollStore.raw = window.scrollY;
+      invalidate();
     };
     measure();
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -147,12 +123,10 @@ function useScrollTicker() {
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', measure);
     };
-  }, []);
+  }, [invalidate]);
 
   useFrame(() => {
-    scrollStore.delta = scrollStore.raw - scrollStore.smooth;
-    // Spring-damped scroll (mirrors joseph-san's 0.06 lerp feel).
-    scrollStore.smooth += (scrollStore.raw - scrollStore.smooth) * 0.06;
+    scrollStore.smooth += (scrollStore.raw - scrollStore.smooth) * 0.08;
     scrollStore.progress = clamp(scrollStore.smooth / scrollStore.max, 0, 1);
     scrollStore.section = scrollStore.progress * (SECTION_COUNT - 1);
   });
@@ -160,11 +134,6 @@ function useScrollTicker() {
   return scrollStore;
 }
 
-// ---------------------------------------------------------------
-// Camera: cinematic waypoints, one per section.
-// Camera config matches joseph-san: fov 45, near 0.1, far 1000, start (0, 0.5, 7).
-// Precomputed as Vector3 so the render loop does zero allocations.
-// ---------------------------------------------------------------
 const cameraWaypoints = [
   { pos: new THREE.Vector3(0, 0.5, 8), lookAt: new THREE.Vector3(0, 0, -2) },
   { pos: new THREE.Vector3(0.6, 1.1, 6.2), lookAt: new THREE.Vector3(0.3, 0.2, -4) },
@@ -198,74 +167,36 @@ function CameraRig() {
   return null;
 }
 
-// ---------------------------------------------------------------
-// Lights: ambient + two colored points + a scroll-reactive spotlight.
-// ---------------------------------------------------------------
-function CinematicLights() {
-  const spotRef = useRef<THREE.PointLight>(null!);
-  const spotColor = useMemo(() => new THREE.Color(PALETTE[0]), []);
-
-  useFrame(() => {
-    if (!spotRef.current) return;
-    const s = scrollStore.section;
-
-    // The spotlight orbits ahead of the camera, cycling palette per section.
-    const phase = performance.now() * 0.0003;
-    const radius = 4 + Math.sin(phase) * 0.6;
-    const a = s * 0.9;
-    spotRef.current.position.set(
-      Math.cos(a + phase) * radius,
-      0.4 + Math.sin(phase * 0.7) * 0.3,
-      Math.sin(a + phase) * radius
-    );
-
-    // Shift spotlight hue across sections for a living, cinematic feel.
-    spotColor.set(PALETTE[Math.floor(s) % PALETTE.length]);
-    spotRef.current.color.lerpColors(spotRef.current.color, spotColor, 0.04);
-  });
-
+function TechLights() {
   return (
     <>
-      <ambientLight intensity={0.45} color="#9ca3af" />
-      <directionalLight
-        position={[6, 10, 6]}
-        intensity={0.9}
-        color="#fbbf24"
-        castShadow
-      />
-      <pointLight position={[5, 5, 5]} intensity={0.7} color="#fbbf24" />
-      <pointLight position={[-5, -3, 3]} intensity={0.45} color="#22d3ee" />
-      <pointLight ref={spotRef} intensity={0.6} color="#a855f7" distance={22} />
+      <ambientLight intensity={0.3} color="#1e1b4b" />
+      <directionalLight position={[6, 10, 6]} intensity={0.7} color="#6366f1" />
+      <pointLight position={[5, 5, 5]} intensity={0.5} color="#22d3ee" />
+      <pointLight position={[-5, -3, 3]} intensity={0.35} color="#a855f7" />
     </>
   );
 }
 
-// ---------------------------------------------------------------
-// Data nodes: the signature joseph-san "scatter -> formation" reveal.
-// 90 instanced icosahedra, scattered behind the camera, that fly into
-// 3 code-themed clusters (column / ring / grid) as you scroll into each section.
-// One draw call → negligible cost.
-// ---------------------------------------------------------------
-function DataNodes() {
+function TechNodes() {
   const meshRef = useRef<THREE.InstancedMesh>(null!);
   const dummy = useMemo(() => new THREE.Object3D(), []);
   const color = useMemo(() => new THREE.Color(), []);
 
   const { targets, scatters, sections, colors } = NODE_DATA;
 
-  const geo = useMemo(() => new THREE.IcosahedronGeometry(0.16, 0), []);
+  const geo = useMemo(() => new THREE.OctahedronGeometry(0.12, 0), []);
   const mat = useMemo(
     () =>
-      new THREE.MeshStandardMaterial({
-        vertexColors: true,
-        emissive: '#ffffff',
-        emissiveIntensity: 0.28,
-        toneMapped: true,
+      new THREE.MeshBasicMaterial({
+        color: '#22d3ee',
+        transparent: true,
+        opacity: 0.7,
+        depthWrite: false,
       }),
     []
   );
 
-  // Enable per-instance vertex colors (one draw call, many colors).
   useLayoutEffect(() => {
     const mesh = meshRef.current;
     if (mesh) {
@@ -283,22 +214,21 @@ function DataNodes() {
     const scroll = scrollStore.section;
 
     for (let i = 0; i < NODE_COUNT; i++) {
-      const t = (scroll - sections[i]) / 1.3; // each cluster unfolds over ~1.3 section-units
+      const t = (scroll - sections[i]) / 1.3;
       const k = clamp(t, 0, 1);
       const eased = k * k * (3 - 2 * k);
 
-      // Fly in from the scattered position, then idle with a subtle wave.
-      const tx = THREE.MathUtils.lerp(scatters[i].x, targets[i].x, eased) + Math.sin(time * 0.5 + i) * 0.03 * eased;
-      const ty = THREE.MathUtils.lerp(scatters[i].y, targets[i].y, eased) + Math.cos(time * 0.4 + i * 1.3) * 0.03 * eased;
+      const tx = THREE.MathUtils.lerp(scatters[i].x, targets[i].x, eased) + Math.sin(time * 0.4 + i) * 0.04 * eased;
+      const ty = THREE.MathUtils.lerp(scatters[i].y, targets[i].y, eased) + Math.cos(time * 0.35 + i * 1.2) * 0.04 * eased;
       const tz = THREE.MathUtils.lerp(scatters[i].z, targets[i].z, eased);
 
       dummy.position.set(tx, ty, tz);
-      // Pop scale on reveal.
-      dummy.scale.setScalar(clamp(eased * 0.9 + 0.1, 0, 1));
+      dummy.scale.setScalar(clamp(eased * 0.8 + 0.2, 0, 1));
       dummy.updateMatrix();
       mesh.setMatrixAt(i, dummy.matrix);
 
-      color.copy(colors[i]).multiplyScalar(0.7 + eased * 0.35);
+      color.setHex(colors[i]);
+      color.multiplyScalar(0.6 + eased * 0.4);
       mesh.setColorAt(i, color);
     }
     mesh.instanceMatrix.needsUpdate = true;
@@ -308,18 +238,21 @@ function DataNodes() {
   return <instancedMesh ref={meshRef} args={[geo, mat, NODE_COUNT]} />;
 }
 
-// ---------------------------------------------------------------
-// Starfield: a distant field of instanced stars that breathe with scroll.
-// ---------------------------------------------------------------
-function Starfield() {
+function TechParticles() {
   const meshRef = useRef<THREE.InstancedMesh>(null!);
   const dummy = useMemo(() => new THREE.Object3D(), []);
+  const { positions } = PARTICLE_DATA;
 
-  const positions = STAR_POSITIONS;
-
-  const geo = useMemo(() => new THREE.SphereGeometry(0.022, 6, 6), []);
+  const geo = useMemo(() => new THREE.PlaneGeometry(0.18, 0.18), []);
   const mat = useMemo(
-    () => new THREE.MeshBasicMaterial({ color: '#6366f1', transparent: true, opacity: 0.55, depthWrite: false }),
+    () =>
+      new THREE.MeshBasicMaterial({
+        color: '#818cf8',
+        transparent: true,
+        opacity: 0.55,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+      }),
     []
   );
 
@@ -327,15 +260,17 @@ function Starfield() {
     const mesh = meshRef.current;
     if (!mesh) return;
     const time = performance.now() * 0.0003;
-    const pulse = 1 + scrollStore.delta * 0.02;
+    const pulse = 1 + scrollStore.smooth * 0.0004;
+
     for (let i = 0; i < PARTICLE_COUNT; i++) {
-      const s = 0.5 + 0.5 * Math.sin(time + i * 0.9);
+      const s = 0.4 + 0.6 * Math.sin(time + i * 1.1);
       dummy.position.set(
         positions[i * 3],
-        positions[i * 3 + 1] + Math.sin(time * 0.4 + i) * 0.18 * s,
+        positions[i * 3 + 1] + Math.sin(time * 0.3 + i) * 0.2 * s,
         positions[i * 3 + 2]
       );
-      dummy.scale.setScalar(s * 0.9 * pulse);
+      dummy.rotation.set(time * 0.5 + i, time * 0.3 + i, 0);
+      dummy.scale.setScalar(s * 0.7 * pulse);
       dummy.updateMatrix();
       mesh.setMatrixAt(i, dummy.matrix);
     }
@@ -345,20 +280,17 @@ function Starfield() {
   return <instancedMesh ref={meshRef} args={[geo, mat, PARTICLE_COUNT]} />;
 }
 
-// ---------------------------------------------------------------
-// Central code sphere + a torus knot: slow rotation, scroll-reactive.
-// ---------------------------------------------------------------
-const MemoizedIcosahedron = React.memo(function Icosahedron() {
+const MemoizedWireTorus = React.memo(function WireTorus() {
   const meshRef = useRef<THREE.Mesh>(null!);
-  const geo = useMemo(() => new THREE.IcosahedronGeometry(1.35, 1), []);
+  const geo = useMemo(() => new THREE.TorusKnotGeometry(0.55, 0.13, 64, 8), []);
   const mat = useMemo(
     () =>
-      new THREE.MeshStandardMaterial({
-        color: '#1a1a2e',
-        roughness: 0.22,
-        metalness: 0.82,
-        emissive: '#0a0a1f',
-        emissiveIntensity: 0.45,
+      new THREE.MeshBasicMaterial({
+        color: '#6366f1',
+        wireframe: true,
+        transparent: true,
+        opacity: 0.35,
+        depthWrite: false,
       }),
     []
   );
@@ -367,108 +299,115 @@ const MemoizedIcosahedron = React.memo(function Icosahedron() {
     if (!meshRef.current) return;
     meshRef.current.rotation.x += delta * 0.07;
     meshRef.current.rotation.y += delta * 0.11;
-    const s = scrollStore.progress;
-    meshRef.current.position.y = 0.6 + Math.sin(s * Math.PI) * 0.12;
+    meshRef.current.rotation.z += delta * 0.04;
+
+    const t = performance.now() * 0.001;
+    const angle = t * 0.4;
+    meshRef.current.position.x = Math.cos(angle) * 1.2;
+    meshRef.current.position.z = -1 + Math.sin(angle) * 1.2;
   });
 
   return <mesh ref={meshRef} args={[geo, mat]} position={[0, 0.5, -1]} />;
 });
 
-const MemoizedTorusKnot = React.memo(function TorusKnot() {
+const MemoizedWireIco = React.memo(function WireIco() {
   const meshRef = useRef<THREE.Mesh>(null!);
-  const geo = useMemo(() => new THREE.TorusKnotGeometry(0.5, 0.15, 64, 8), []);
+  const geo = useMemo(() => new THREE.IcosahedronGeometry(1.2, 1), []);
   const mat = useMemo(
     () =>
-      new THREE.MeshStandardMaterial({
-        color: '#2a2a3e',
-        roughness: 0.28,
-        metalness: 0.92,
-        emissive: '#141428',
-        emissiveIntensity: 0.5,
+      new THREE.MeshBasicMaterial({
+        color: '#22d3ee',
+        wireframe: true,
+        transparent: true,
+        opacity: 0.2,
+        depthWrite: false,
       }),
     []
   );
 
   useFrame((_, delta) => {
     if (!meshRef.current) return;
-    meshRef.current.rotation.x -= delta * 0.1;
-    meshRef.current.rotation.z += delta * 0.08;
-    const sp = scrollStore.smooth;
-    meshRef.current.position.set(
-      2.4 + Math.sin(sp * 0.0002) * 0.2,
-      -0.7 + Math.cos(sp * 0.00015) * 0.12,
-      -0.6
-    );
+    meshRef.current.rotation.x -= delta * 0.05;
+    meshRef.current.rotation.z += delta * 0.06;
+
+    const t = performance.now() * 0.001;
+    const angle = -t * 0.3;
+    meshRef.current.position.x = Math.cos(angle) * 1.5;
+    meshRef.current.position.z = -1 + Math.sin(angle) * 1.5;
   });
 
-  return <mesh ref={meshRef} args={[geo, mat]} position={[2.5, -0.8, -0.5]} />;
+  return <mesh ref={meshRef} args={[geo, mat]} position={[0, 0.5, -1]} />;
 });
 
-const MemoizedSphere = React.memo(function Sphere({
+const MemoizedFloatingHex = React.memo(function FloatingHex({
   pos,
   color,
-  emissive,
+  scale,
 }: {
   pos: [number, number, number];
   color: string;
-  emissive: string;
+  scale: number;
 }) {
   const meshRef = useRef<THREE.Mesh>(null!);
-  const geo = useMemo(() => new THREE.SphereGeometry(0.3, 16, 16), []);
+  const geo = useMemo(() => new THREE.OctahedronGeometry(0.18, 0), []);
   const mat = useMemo(
     () =>
-      new THREE.MeshStandardMaterial({
+      new THREE.MeshBasicMaterial({
         color,
-        roughness: 0.15,
-        metalness: 0.3,
-        emissive,
-        emissiveIntensity: 0.55,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.5,
+        depthWrite: false,
       }),
-    [color, emissive]
+    [color]
   );
 
   useFrame(() => {
     if (!meshRef.current) return;
+    const t = performance.now() * 0.001;
     meshRef.current.position.y =
-      pos[1] + Math.sin(performance.now() * 0.0009 + pos[0]) * 0.12;
+      pos[1] + Math.sin(t * 0.8 + pos[0]) * 0.15;
+    meshRef.current.rotation.x += 0.008;
+    meshRef.current.rotation.y += 0.012;
+
+    const orbit = t * 0.25 + pos[0] * 2;
+    meshRef.current.position.x = pos[0] + Math.cos(orbit) * 0.25;
+    meshRef.current.position.z = pos[2] + Math.sin(orbit) * 0.25;
   });
 
-  return <mesh ref={meshRef} args={[geo, mat]} position={pos} />;
+  return <mesh ref={meshRef} args={[geo, mat]} position={pos} scale={scale} />;
 });
 
-function SceneContent() {
-  useScrollTicker();
+function FloatingHex({
+  pos,
+  color,
+  scale,
+}: {
+  pos: [number, number, number];
+  color: string;
+  scale: number;
+}) {
+  return <MemoizedFloatingHex pos={pos} color={color} scale={scale} />;
+}
+
+function SceneContent({ invalidate }: { invalidate: () => void }) {
+  useScrollTicker(invalidate);
   return (
     <>
       <CameraRig />
-      <CinematicLights />
-      <MemoizedIcosahedron />
-      <MemoizedTorusKnot />
-      <MemoizedSphere pos={[1.5, 1.2, -3]} color="#fbbf24" emissive="#fbbf24" />
-      <MemoizedSphere pos={[-2, -0.8, -3]} color="#22d3ee" emissive="#22d3ee" />
-      <DataNodes />
-      <Starfield />
+      <TechLights />
+      <MemoizedWireIco />
+      <MemoizedWireTorus />
+      <FloatingHex pos={[2.0, 1.0, -3]} color="#a855f7" scale={1.2} />
+      <FloatingHex pos={[-2.2, -0.6, -3]} color="#34d399" scale={1} />
+      <FloatingHex pos={[1.0, -1.4, -4]} color="#fbbf24" scale={0.9} />
+      <TechNodes />
+      <TechParticles />
       <Preload all />
-
-          <EffectComposer multisampling={0}>
-        <Bloom
-          mipmapBlur
-          intensity={0.45}
-          luminanceThreshold={0.75}
-          luminanceSmoothing={0.05}
-          radius={0.9}
-        />
-        <ChromaticAberration offset={[0.0005, 0.0005]} />
-        <Noise opacity={0.025} />
-        <Vignette offset={0.35} darkness={0.35} />
-      </EffectComposer>
     </>
   );
 }
 
-// ---------------------------------------------------------------
-// Scroll progress bar (mirrors the reference's right-edge scroll line).
-// ---------------------------------------------------------------
 function ScrollProgress() {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -486,15 +425,19 @@ function ScrollProgress() {
     };
   }, []);
   return (
-    <div className="fixed right-1 top-0 h-svh w-[3px] z-[50] bg-white/10">
-      <div ref={ref} className="w-full h-1 bg-amber-400/80 origin-top transition-transform duration-150" />
+    <div className="fixed right-1 top-0 h-svh w-[3px] z-[50] bg-white/5">
+      <div
+        ref={ref}
+        className="w-full h-1 bg-cyan-400/70 origin-top"
+        style={{ transition: 'transform 0.1s linear' }}
+      />
     </div>
   );
 }
 
 function SceneFallback() {
   return (
-    <div className="fixed inset-0 z-0 bg-[#0a0a0a]" aria-hidden="true" />
+    <div className="fixed inset-0 z-0 bg-[#0a0a0f]" aria-hidden="true" />
   );
 }
 
@@ -509,12 +452,12 @@ export default function Scene3D({ children }: { children: React.ReactNode }) {
           zIndex: 0,
           pointerEvents: 'none',
           overflow: 'hidden',
-          backgroundColor: '#0a0a0a',
+          backgroundColor: '#0a0a0f',
         }}
       >
         <Suspense fallback={<SceneFallback />}>
           <Canvas
-            dpr={[1, 1.5]}
+            dpr={[1, 1]}
             frameloop="always"
             gl={{
               antialias: true,
@@ -522,14 +465,12 @@ export default function Scene3D({ children }: { children: React.ReactNode }) {
               powerPreference: 'high-performance',
             }}
             camera={{ fov: 45, near: 0.1, far: 1000, position: [0, 0.5, 8] }}
-            onCreated={({ scene, gl }) => {
+            onCreated={({ gl }) => {
               gl.toneMapping = THREE.NeutralToneMapping;
               gl.toneMappingExposure = 0.9;
-              scene.background = new THREE.Color('#0a0a0a');
-              scene.fog = new THREE.FogExp2('#0a0a0a', 0.03);
             }}
           >
-            <SceneContent />
+            <SceneContent invalidate={() => {}} />
           </Canvas>
         </Suspense>
       </div>
