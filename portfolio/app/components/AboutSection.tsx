@@ -172,21 +172,14 @@ This led me to join Upcode Nepal in Kathmandu as a React Frontend Developer, whe
 
             {/* CTA row */}
             <div className="reveal-up-hidden flex flex-wrap gap-4 delay-500">
-           <GenerateButton
-  hue={280} // Purple glow
-  onClick={() => {
-    // Triggers a native safe download hook
-    const link = document.createElement('a');
-    link.href = '/resume.pdf';
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    link.click();
-  }}
-  className="btn-primary inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm"
->
-  <Icon name="ArrowDownTrayIcon" size={16} />
-  Download CV
-</GenerateButton>
+            <a
+              href="/yogesh_frontend_cv.pdf"
+              download
+              className="btn-primary inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm cursor-pointer"
+            >
+              <Icon name="ArrowDownTrayIcon" size={16} />
+              Download CV
+            </a>
               <GenerateButton
                 onClick={() => {
                   const el = document.getElementById('contact');
