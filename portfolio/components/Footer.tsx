@@ -62,7 +62,7 @@ export default function Footer() {
   return (
     <footer 
       ref={footerRef} 
-      className="relative bg-[#070709] text-white border-t border-[#14141a] overflow-hidden py-14 shadow-[0_-12px_40px_rgba(0,0,0,0.8)]"
+      className="relative glass-strong text-white border-t border-[#14141a] overflow-hidden py-14"
     >
       {/* 3D Laser Horizon Glow Line */}
       <div className="absolute top-0 Harmoni-gradient left-1/2 -translate-x-1/2 w-full max-w-4xl h-[1px] bg-gradient-to-r from-transparent via-amber-500/40 to-transparent" />
@@ -84,7 +84,7 @@ export default function Footer() {
               aria-label="Scroll to top"
             >
               <div className="p-1 bg-[#07070a] rounded-lg shadow-[inset_0_1px_3px_rgba(0,0,0,0.8)] group-hover:text-amber-400 transition-colors">
-                <AppLogo size={20} />
+                <AppLogo />
               </div>
               <span className="font-display text-xs tracking-wider uppercase font-semibold text-neutral-400 group-hover:text-neutral-200 transition-colors">
                 PortfolioX

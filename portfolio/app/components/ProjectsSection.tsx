@@ -223,13 +223,13 @@ export default function ProjectsSection() {
     <section
       id="projects"
       ref={sectionRef}
-      className="relative py-32 bg-[#050507] overflow-hidden"
+      className="relative py-32 overflow-hidden bg-transparent"
     >
       {/* Deep Atmosphere Subdued Shadow Maps */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-neutral-900/10 blur-[150px] rounded-full pointer-events-none" />
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-neutral-900 to-transparent" />
 
-      <div className="max-w-6xl mx-auto px-8 relative z-10">
+      <div className="max-w-6xl mx-auto px-8 relative z-10 glass rounded-3xl p-8">
         
         {/* Minimalist Sub-Header Segment */}
         <div 

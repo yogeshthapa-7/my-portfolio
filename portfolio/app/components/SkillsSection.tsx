@@ -198,7 +198,7 @@ export default function SkillsSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="py-32 overflow-hidden bg-[#141417]">
+    <section ref={sectionRef} className="py-32 overflow-hidden bg-transparent">
       {/* Absolute Injection for 3D Layout Rules, Flip Behaviors, and Text Embossing */}
       <style jsx global>{`
         /* Core CSS 3D Engine Hooks */
@@ -266,7 +266,7 @@ export default function SkillsSection() {
         }
       `}</style>
 
-      <div className="mx-auto max-w-6xl px-8">
+      <div className="mx-auto max-w-6xl px-8 relative glass rounded-3xl p-8">
         {/* 3D Rigid Structural Header Container Block */}
         <div className={`mb-24 text-center [perspective:1200px] opacity-0 ${isVisible ? "animate-header-3d" : ""}`}>
           

@@ -17,7 +17,6 @@ export default function HeroSection() {
   const [roleIndex, setRoleIndex] = useState(0);
   const [displayText, setDisplayText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const heroRef = useRef<HTMLDivElement>(null);
   const typewriterRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -46,21 +45,6 @@ export default function HeroSection() {
     };
   }, [displayText, isDeleting, roleIndex]);
 
-  // Cursor parallax
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!heroRef.current) return;
-      const rect = heroRef.current.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
-      const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-      setMousePos({ x, y });
-    };
-
-    const el = heroRef.current;
-    if (el) el.addEventListener('mousemove', handleMouseMove);
-    return () => { if (el) el.removeEventListener('mousemove', handleMouseMove); };
-  }, []);
-
   const handleScrollDown = () => {
     const about = document.getElementById('about');
     if (about) about.scrollIntoView({ behavior: 'smooth' });
@@ -70,96 +54,29 @@ export default function HeroSection() {
     
     <section
       ref={heroRef}
-      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden grid-bg"
+      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
       aria-label="Hero section"
     >
-      {/* Background atmospheric layers */}
+      {/* Subtle radial vignette: keeps the hero readable over the cinematic canvas */}
       <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ transform: `translate(${mousePos.x * -15}px, ${mousePos.y * -10}px)` }}
-      >
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 blob-gold opacity-60" />
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 blob-blue opacity-50" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] blob-purple opacity-40" />
-      </div>
+        className="absolute inset-0 pointer-events-none rounded-[inherit]"
+        style={{
+          background:
+            'radial-gradient(ellipse at center, transparent 25%, rgba(0,0,0,0.55) 100%)',
+        }}
+      />
 
-      {/* Noise overlay */}
-      <div className="absolute inset-0 bg-noise opacity-50 pointer-events-none mix-blend-overlay" />
-
-      {/* 3D Floating Geometric Elements */}
-      {/* Large sphere — parallax layer 1 */}
-      <div
-        className="absolute right-[8%] top-[15%] pointer-events-none hidden lg:block"
-        style={{ transform: `translate(${mousePos.x * 20}px, ${mousePos.y * 15}px)` }}
+      {/* Scroll Indicator */}
+      <button
+        onClick={handleScrollDown}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground hover:text-foreground transition-colors group"
+        aria-label="Scroll down"
       >
-        <div className="relative animate-float-slow">
-          <div className="w-32 h-32 sphere-3d animate-pulse-glow" />
-          {/* Orbit ring */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-48 h-48 rounded-full border border-primary/20 animate-spin-slow" style={{ borderStyle: 'dashed' }} />
-          </div>
-          {/* Orbiting dot */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-            <div className="animate-orbit">
-              <div className="w-3 h-3 rounded-full bg-primary shadow-lg" style={{ boxShadow: '0 0 12px rgba(200,150,90,0.8)' }} />
-            </div>
-          </div>
+        <span className="text-[10px] font-semibold uppercase tracking-[0.3em]">Scroll</span>
+        <div className="w-5 h-8 rounded-full border border-current/30 flex items-start justify-center p-1 group-hover:border-foreground/50 transition-colors">
+          <div className="w-1 h-2 rounded-full bg-current animate-bounce" />
         </div>
-      </div>
-
-      {/* Small blue sphere — parallax layer 2 */}
-      <div
-        className="absolute left-[6%] bottom-[25%] pointer-events-none hidden lg:block"
-        style={{ transform: `translate(${mousePos.x * -25}px, ${mousePos.y * 20}px)` }}
-      >
-        <div className="animate-float-reverse">
-          <div className="w-20 h-20 sphere-blue animate-pulse-glow-blue" />
-        </div>
-      </div>
-
-      {/* Floating code snippet card */}
-      <div
-        className="absolute left-[4%] top-[20%] pointer-events-none hidden xl:block"
-        style={{ transform: `translate(${mousePos.x * -18}px, ${mousePos.y * 12}px)` }}
-      >
-        <div className="animate-float glass rounded-xl p-4 w-52 glow-blue">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
-            <div className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
-            <div className="w-2.5 h-2.5 rounded-full bg-green-400" />
-            <span className="text-xs text-muted-foreground ml-1 font-mono">main.ts</span>
-          </div>
-          <div className="space-y-1.5 font-mono text-xs">
-            <div><span className="text-accent">const</span> <span className="text-foreground">dev</span> <span className="text-muted-foreground">= {`{`}</span></div>
-            <div className="pl-3"><span className="text-primary">name</span><span className="text-muted-foreground">:</span> <span className="text-green-400">&quot;Yogesh&quot;</span><span className="text-muted-foreground">,</span></div>
-            <div className="pl-3"><span className="text-primary">level</span><span className="text-muted-foreground">:</span> <span className="text-green-400">&quot;Junior&quot;</span></div>
-            <div className="text-muted-foreground">{`}`}</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Floating stats card */}
-      <div
-        className="absolute right-[5%] bottom-[20%] pointer-events-none hidden xl:block"
-        style={{ transform: `translate(${mousePos.x * 22}px, ${mousePos.y * -14}px)` }}
-      >
-        <div className="animate-float-slow glass rounded-xl p-4 w-44 glow-gold">
-          <div className="text-xs text-muted-foreground mb-2 font-medium uppercase tracking-wider">Projects</div>
-          <div className="font-display text-3xl font-bold text-gradient-gold">4+</div>
-          <div className="text-xs text-muted-foreground mt-1">Shipped to prod</div>
-          <div className="mt-3 h-1.5 rounded-full bg-muted overflow-hidden">
-            <div className="h-full w-4/5 rounded-full bg-gradient-to-r from-primary to-accent" />
-          </div>
-        </div>
-      </div>
-
-      {/* Hexagon decoration */}
-      <div
-        className="absolute right-[18%] bottom-[35%] pointer-events-none hidden lg:block"
-        style={{ transform: `translate(${mousePos.x * 10}px, ${mousePos.y * -8}px)` }}
-      >
-        <div className="animate-float w-12 h-12 hexagon bg-accent/20 border border-accent/30" style={{ animationDelay: '2s' }} />
-      </div>
+      </button>
 
       {/* Main Content */}
       <div className="relative z-10 text-center px-6 max-w-5xl mx-auto pt-24 pb-16">

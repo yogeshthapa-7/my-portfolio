@@ -96,14 +96,15 @@ export default function AboutSection() {
     <section
       id="about"
       ref={sectionRef}
-      className="relative py-24 bg-secondary overflow-hidden">
+      className="relative py-24 overflow-hidden bg-transparent"
+    >
       
       {/* Background elements */}
-      <div className="absolute top-0 right-0 w-96 h-96 blob-gold opacity-30 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-80 h-80 blob-blue opacity-20 pointer-events-none" />
-      <div className="divider-glow absolute top-0 left-0 right-0" />
+      <div className="absolute top-0 right-0 w-96 h-96 blob-gold opacity-30 pointer-events-none z-0" />
+      <div className="absolute bottom-0 left-0 w-80 h-80 blob-blue opacity-20 pointer-events-none z-0" />
+      <div className="divider-glow absolute top-0 left-0 right-0 z-20" />
 
-      <div className="max-w-6xl mx-auto px-6 relative z-10">
+      <div className="max-w-6xl mx-auto px-6 relative z-10 glass rounded-3xl p-8">
         {/* Section label */}
         <div className="reveal-up-hidden flex items-center gap-3 mb-4">
           <span className="h-px w-10 bg-primary" />
@@ -118,7 +119,7 @@ export default function AboutSection() {
               <div className="relative rounded-2xl overflow-hidden glass glow-gold aspect-[4/5]">
                 <AppImage
                   src="/portfolio.png"
-                  alt="Alex Morgan software engineer seated at desk in dimly lit modern office, focused expression, dark background with monitor glow"
+                  alt="profile photo"
                   fill
                   className="object-cover"
                   priority />

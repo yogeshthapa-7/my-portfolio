@@ -154,11 +154,11 @@ export default function EducationSection() {
   const [showCards, setShowCards] = useState(false);
 
   return (
-    <section id="education" className="relative py-28 bg-[#0a0a0a] text-white overflow-hidden selection:bg-cyan-500/30">
+    <section id="education" className="relative py-28 text-white overflow-hidden bg-transparent">
       {/* Subtle background luxury mesh glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-radial-gradient from-neutral-900/40 via-transparent to-transparent pointer-events-none" />
 
-      <div className="max-w-6xl mx-auto px-6 text-center relative z-10">
+      <div className="max-w-6xl mx-auto px-6 text-center relative z-10 glass rounded-3xl p-8">
         <span className="text-[10px] tracking-[0.25em] text-neutral-500 uppercase block mb-3 font-medium">Education &amp; Certifications</span>
         <h2 className="font-serif text-4xl md:text-5xl font-light tracking-wide text-neutral-200 mb-20">
           Knowledge &amp; <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-yellow-100 to-amber-300 font-normal italic">Credentials</span>

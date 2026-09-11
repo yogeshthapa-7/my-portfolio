@@ -70,7 +70,7 @@ export default function Header() {
             className="flex items-center gap-2.5 group"
             aria-label="Scroll to top"
           >
-            <AppLogo size={36} />
+            <AppLogo />
            
           </button>
 

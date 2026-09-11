@@ -124,8 +124,8 @@ export default function ContactSection() {
   };
 
   return (
-    <section id="contact" ref={sectionRef} className="relative py-24 bg-[#070709] text-white overflow-hidden">
-      <div className="max-w-6xl mx-auto px-6 relative z-10">
+    <section id="contact" ref={sectionRef} className="relative py-24 text-white overflow-hidden bg-transparent selection:bg-cyan-500/30">
+      <div className="max-w-6xl mx-auto px-6 relative z-10 glass rounded-3xl p-8">
         
         {/* Header Layout Component */}
         <div className="flex items-center gap-3 mb-4">
