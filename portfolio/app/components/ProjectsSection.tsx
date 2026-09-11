@@ -151,7 +151,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
         </div>
 
         {/* Premium Glossy 3D Buttons */}
-        <div className="flex gap-3 mt-8">
+        <div className="flex flex-col sm:flex-row gap-3 mt-8">
           <GenerateButton
   hue={190} // Cyan/Blue glow matching your "Live Demo" look
   onClick={() => {
@@ -159,7 +159,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
     const win = window.open(project.liveUrl, "_blank", "noopener,noreferrer");
     if (win) win.focus();
   }}
-  className="group flex-1 min-w-[220px] relative py-4 px-6 text-center text-sm font-semibold rounded-3xl overflow-hidden border border-neutral-700 bg-gradient-to-r from-[#1C1C22] via-[#2A2A34] to-[#1C1C22] shadow-[inset_0_2px_4px_rgba(255,255,255,0.1),inset_0_-4px_6px_rgba(0,0,0,0.8)] hover:shadow-[inset_0_2px_6px_rgba(255,255,255,0.2)] transition-all duration-300 active:scale-[0.97]"
+  className="group w-full sm:flex-1 min-w-0 relative py-4 px-6 text-center text-sm font-semibold rounded-3xl overflow-hidden border border-neutral-700 bg-gradient-to-r from-[#1C1C22] via-[#2A2A34] to-[#1C1C22] shadow-[inset_0_2px_4px_rgba(255,255,255,0.1),inset_0_-4px_6px_rgba(0,0,0,0.8)] hover:shadow-[inset_0_2px_6px_rgba(255,255,255,0.2)] transition-all duration-300 active:scale-[0.97]"
 >
   {/* Your custom interactive shimmer effect */}
   <div 
@@ -180,7 +180,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
     const win = window.open(project.githubUrl, "_blank", "noopener,noreferrer");
     if (win) win.focus();
   }}
-  className="group flex-1 min-w-[220px] relative py-4 px-6 text-center text-sm font-semibold rounded-3xl overflow-hidden border border-neutral-600/80 bg-gradient-to-r from-[#16161B] via-[#22222A] to-[#16161B] shadow-[inset_0_2px_4px_rgba(255,255,255,0.08),inset_0_-4px_6px_rgba(0,0,0,0.75)] hover:border-neutral-400 hover:shadow-[inset_0_2px_6px_rgba(255,255,255,0.15)] transition-all duration-300 active:scale-[0.97]"
+  className="group w-full sm:flex-1 min-w-0 relative py-4 px-6 text-center text-sm font-semibold rounded-3xl overflow-hidden border border-neutral-600/80 bg-gradient-to-r from-[#16161B] via-[#22222A] to-[#16161B] shadow-[inset_0_2px_4px_rgba(255,255,255,0.08),inset_0_-4px_6px_rgba(0,0,0,0.75)] hover:border-neutral-400 hover:shadow-[inset_0_2px_6px_rgba(255,255,255,0.15)] transition-all duration-300 active:scale-[0.97]"
 >
   {/* Absolute layout shimmer modifier layer */}
   <div 

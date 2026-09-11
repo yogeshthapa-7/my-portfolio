@@ -193,13 +193,13 @@ export default function EducationSection() {
           </AnimatePresence>
 
           <motion.div
-            animate={{ scale: showCards ? 0.85 : 1 }}
+            animate={{ scale: showCards ? 0.7 : 1 }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             className="absolute z-30"
           >
             <div
               onClick={() => setShowCards(!showCards)}
-              className="group relative w-56 h-56 flex items-center justify-center cursor-pointer select-none"
+              className="group relative w-40 h-40 sm:w-56 sm:h-56 flex items-center justify-center cursor-pointer select-none"
             >
               <motion.div
                 animate={{ rotate: showCards ? 360 : 0, scale: showCards ? 1.05 : 1 }}
@@ -209,9 +209,9 @@ export default function EducationSection() {
               />
 
               <motion.div
-                animate={{ scale: showCards ? 0.95 : 1 }}
+                animate={{ scale: showCards ? 0.9 : 1 }}
                 transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                className="w-44 h-44 rounded-full bg-gradient-to-br from-neutral-900 via-neutral-950 to-black border border-neutral-800/80 group-hover:border-cyan-500/40 flex items-center justify-center shadow-[0_0_50px_rgba(0,0,0,0.8)] group-hover:shadow-[0_0_50px_rgba(34,211,238,0.15)] transition-all duration-500"
+                className="w-32 h-32 sm:w-44 sm:h-44 rounded-full bg-gradient-to-br from-neutral-900 via-neutral-950 to-black border border-neutral-800/80 group-hover:border-cyan-500/40 flex items-center justify-center shadow-[0_0_50px_rgba(0,0,0,0.8)] group-hover:shadow-[0_0_50px_rgba(34,211,238,0.15)] transition-all duration-500"
               >
                 <div className="text-center px-4">
                   <motion.div
@@ -234,7 +234,7 @@ export default function EducationSection() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.4 }}
-                className="w-full grid grid-cols-1 md:grid-cols-2 gap-y-16 gap-x-36 relative z-10"
+                className="w-full grid grid-cols-1 md:grid-cols-2 gap-y-20 gap-x-8 md:gap-x-36 relative z-10"
               >
                 <motion.div
                   initial={{ opacity: 0, x: -30, y: -30 }}

@@ -105,7 +105,7 @@ function SkillCardComponent({ card, index, isVisible }: { card: SkillCard; index
     /* The 3D Perspective Container viewport */
     <div 
       style={{ animationDelay: `${index * 100}ms` }}
-      className={`card-3d-viewport group h-[340px] w-full min-w-[280px] bg-transparent ${
+      className={`card-3d-viewport group h-[320px] sm:h-[340px] w-full bg-transparent ${
         isVisible ? "reveal-card-active" : "reveal-card-hidden"
       }`}
     >
